@@ -5,6 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Windows.Forms;
+using System.Drawing;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Net;
 
 namespace Soleil_et_Soie
 {
@@ -20,27 +25,73 @@ namespace Soleil_et_Soie
             dbMan.CloseConnection();
         }
 
-        public bool GetLogin(string username, string password) {
+        public bool GetLogin(string username, string password,ref string type) {
+            string typequery = "SELECT UserType FROM Users WHERE UserName ='" +username +"';";
             string query = "SELECT COUNT(UserName) FROM Users WHERE UserName ='" +username +"' AND Password ='" +password+"';";
             int result = (int)dbMan.ExecuteScalar(query);
-            return result == 1;
+            if (result == 1)
+            {
+                type = dbMan.ExecuteScalar(typequery).ToString();
+                return true;
+            }
+            else return false;
         }
         
-        public int InsertNewUser(string un, string pw, int pn, string e, string g, string dc)
+        public int InsertNewUser(string un, string pw, long pn, string e, string g, string dc)
         {
             string query;
             if (g == "NULL")
             {
-                query = "INSERT INTO Users (UserName, Password, PhoneNumber, Email ,DateCreated, UserType, Status )VALUES ('" + un + "','" + pw + "'," + pn + "'," + e + "'"+dc+"' , 'user' , 'active' );";
+                query = "INSERT INTO Users (UserName, Password, PhoneNumber, Email ,DateCreated, UserType, Status )VALUES ('" + un + "','" + pw + "'," + pn + " ,'" + e + "','" + dc + "' , 'user' , 'Logged In' );";
+
+;
             }
             else {
-                query = "INSERT INTO Users (UserName, Password, PhoneNumber, Email,DateCreated, UserType, Status, Gender )VALUES ('" + un + "','" + pw + "'," + pn + ",'" + e + "','"+dc+"', 'user', 'active', '"+g+"');";
+                query = "INSERT INTO Users (UserName, Password, PhoneNumber, Email,DateCreated, UserType, Status, Gender )VALUES ('" + un + "','" + pw + "'," + pn + ",'" + e + "','"+dc+"', 'user', 'Logged In', '"+g+"');";
             }
             return dbMan.ExecuteNonQuery(query);
         }
 
+        public int LoggedIn(string username)
+        {
+            string query = "UPDATE Users SET status = 'logged in' WHERE UserName = '" + username + "';";
+            return dbMan.ExecuteNonQuery(query);
+        }
 
+        public int LoggedOut(string username)
+        {
+            string query = "UPDATE Users SET status = 'logged out' WHERE UserName = '" + username + "';";
+            return dbMan.ExecuteNonQuery(query);
+        }
 
+        public DataTable RetrieveUserInfo(string username)
+        {
+            string query = "SELECT * FROM Users WHERE UserName = '" + username + "';";
+            return dbMan.ExecuteReader(query);
+        }
+        public int UpdateUserDetails(string un, int id, string pw, long pn, string a, string e,string dc, string ut, string s, string g)
+        {
+            string query;
+            if (a == "NULL" && g == "NULL")
+            {
+                query = "UPDATE Users SET UserName = '" + un + "',Password = '" + pw + "',PhoneNumber = " + pn + " ,Email = '" + e + "',DateCreated = '" + dc + "',UserType = '" + ut + "',Status = '" + s + "' WHERE UserID =" + id + ";";
+
+            }
+            else if (a == "NULL")
+            {
+                query = "UPDATE Users SET UserName = '" + un + "',Password = '" + pw + "',PhoneNumber = " + pn + ",Email = '" + e + "',DateCreated = '" + dc + "',UserType = '" + ut + "',Status = '" + s + "',Gender = '" + g + "' WHERE UserID =" + id + ";";
+            }
+            else if (g == "NULL")
+            {
+                query = "UPDATE Users SET UserName = '" + un + "',Password = '" + pw + "',PhoneNumber = " + pn + ",Address = '" + a + "',Email = '" + e + "',DateCreated = '" + dc + "',UserType = '" + ut + "',Status = '" + s + "' WHERE UserID =" + id + ";";
+            }
+            else
+            {
+                query = "UPDATE Users SET UserName = '" + un + "',Password = '" + pw + "',PhoneNumber = " + pn + ",Address = '" + a + "',Email = '" + e + "',DateCreated = '" + dc + "',UserType = '" + ut + "',Status = '" + s + "',Gender = '" + g + "' WHERE UserID =" + id + ";";
+            }
+
+            return dbMan.ExecuteNonQuery(query);
+        }
     }
 }
 
