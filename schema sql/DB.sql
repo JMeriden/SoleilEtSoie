@@ -170,10 +170,84 @@ ON UPDATE CASCADE
 ON DELETE NO ACTION
 );
 
-ALTER TABLE Products
-ADD CONSTRAINT FK_Products_Collection foreign key (Collection_ID) references Collection(CollectionID)
+Use SoleiletSoie
+CREATE TABLE CardDetails(
+User_ID INT,
+CardNumber VARCHAR(300) not null unique,
+CardHolder VARCHAR(50) NOT NULL,
+CVV VARCHAR(50) NOT NULL,
+ExpDate DATE NOT NULL,
+EndsIn INT not null,
+PRIMARY KEY (User_ID,CardNumber),
+FOREIGN KEY (User_ID) REFERENCES Users
 ON UPDATE CASCADE
-ON DELETE SET NULL;
+ON DELETE CASCADE
+);
 
 INSERT INTO Users (UserName, Password, PhoneNumber, Address, Email, DateCreated, UserType, Status)VALUES 
 ('Soleil et Soie' , 'password',01234567890,'123 Baker st.','soleil.fashion@gmail.com','2024/12/23','admin','active');
+
+Use SoleiletSoie
+ALTER TABLE Users 
+ADD ProfilePicture VARBINARY(MAX);
+--ALTER TABLE Products
+--ADD CONSTRAINT FK_Products_Collection foreign key (Collection_ID) references Collection(CollectionID)
+--ON UPDATE CASCADE
+--ON DELETE SET NULL;
+Use SoleiletSoie
+ALTER TABLE Users
+ALTER COLUMN Password VARCHAR(300);
+
+ALTER TABLE Designs
+ADD Material_ID INT;
+
+ALTER TABLE Designs
+ADD CONSTRAINT FK_Design_Material foreign key (Material_ID) references Materials(MaterialID)
+ON UPDATE CASCADE
+ON DELETE CASCADE;
+
+ALTER TABLE Designs
+ADD Collection_ID INT;
+
+ALTER TABLE Designs
+ADD CONSTRAINT FK_Design_Collection foreign key (Collection_ID) references Collection(CollectionID)
+ON UPDATE no action
+ON DELETE no action;
+
+--ALTER TABLE Designs
+--ADD Category_ID INT;
+
+--ALTER TABLE Designs
+--ADD CONSTRAINT FK_Design_category foreign key (Category_ID) references Category(CategoryID)
+--ON UPDATE no action
+--ON DELETE no action;
+
+ALTER TABLE Designs
+ADD Material_Quantity INT;
+
+Use SoleiletSoie
+UPDATE Users SET Password='5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8' WHERE UserName='Soleil Et Soie'; --changing main admin pass to hashed version
+
+
+
+--TESTING SQL
+INSERT INTO Category(CategoryName) VALUES ('testcat');
+
+Use SoleiletSoie
+INSERT INTO Designs(DesignName,ApprovalDate,SubmissionDate,ApprovalStatus,DesignCategory_ID,Designer_ID) VALUES ('test2','2024-12-26','2024-12-26','Approved',1,16);
+INSERT INTO Designs(DesignName,ApprovalDate,SubmissionDate,ApprovalStatus,DesignCategory_ID,Designer_ID) VALUES ('test','2024-12-26','2024-12-26','Approved',1,16);
+
+INSERT INTO Products(ProductName,DateAdded,StockQuantity,Price,Description,Status,Category_ID,Design_ID) VALUES 
+('dress1','2024/12/26',20,500,'wow so dress','approved',1,3),
+('dress2','2024/12/26',30,1000,'wow so dress','approved',1,4);
+
+
+Use SoleiletSoie
+INSERT INTO Orders VALUES (1009,'User', '2024/12/12','Out For Delivery','3000','wtv','2024/12/14')
+
+Use SoleiletSoie
+UPDATE Products SET StockQuantity=20 WHERE ProductName='dress1';
+
+Use SoleiletSoie
+SELECT EndsIn FROM CardDetails WHERE User_ID=15;
+INSERT INTO CardDetails(User_ID,CardHolder,CardNumber,CVV,ExpDate,EndsIn) VALUES (15,'JayJay mshmsh',300,2,'2026-12-20',300);
