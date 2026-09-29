@@ -49,7 +49,7 @@ Seed data is included in `DB.sql` for demo users, categories, collections, and p
 1. Create the database and tables using:
    - `schema sql\DB.sql`
 2. Update the connection string in:
-   - `Soleil et Soie\DBManager.cs`
+   - `Soleil et Soie\Soleil et Soie\DBManager.cs`
    
    The default is:
    ```
